@@ -83,10 +83,16 @@ class Shower:
 
 
     def add_dynamic_object(self,obj):
+        obj.static=False
+        self.objlis.append(obj)
+        return obj
+
+    def add_static_object(self,obj):
+        obj.static=True
         self.objlis.append(obj)
 
-    # def add_static_object
-
+    def add_static_objects(self,objs):
+        for i in objs:self.add_static_object(i)
 
     def get_objects_by_name(self, name):
         get = []
@@ -124,13 +130,12 @@ class Shower:
         for k in self.objlis:
             if k.show:
 
-
                 try:
                     self.screen.blit(k.object, k-k.Rplac)
                 except Exception as e:
                     print(k.name, k.locat, k.Rplac)
                     raise e
-                if True:
+                if k.name:
                     self.screen.blit(self.font.render(str(k.name), True, (0, 0, 255)), k.locat)
         i = 0
         for n in self.printe:
@@ -153,7 +158,9 @@ class Shower:
         for event in self.events:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE: self.running = False
-                elif event.key==K_BACKQUOTE:self.pause = not self.pause
+                elif event.key==K_BACKQUOTE:
+                    if self.pause:print("paused")
+                    self.pause = not self.pause
             elif event.type == QUIT:
                 self.running = False
         if self.running:
