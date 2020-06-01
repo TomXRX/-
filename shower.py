@@ -87,6 +87,13 @@ class Shower:
         self.objlis.append(obj)
         return obj
 
+    def add_controlled_object(self,obj):
+        obj.static=False
+        obj.controlled=True
+        self.objlis.append(obj)
+        return obj
+
+
     def add_static_object(self,obj):
         obj.static=True
         self.objlis.append(obj)
@@ -120,7 +127,10 @@ class Shower:
         self.pressed = pygame.key.get_pressed()
         if self.pressed[K_ESCAPE]: self.running = 0
         for k in self.objlis:
-            k.upd(i for i in self.objlis if i is not k)
+            if "controlled" in k.__dict__:
+                k.upd([i for i in self.objlis if i is not k],self.pressed)
+            else:
+                k.upd(i for i in self.objlis if i is not k)
             if not k.alive:
                 self.objlis.remove(k)
 
