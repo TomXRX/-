@@ -62,8 +62,12 @@ def obj_handler(id,typ,a,b):
         if "id" in i.__dict__ and i.id==id:
             i.confirmed = 2
             get=i
-        if i.type=="player0":player1=i
-        if i.type=="player2":player2=i
+        if i.type=="player0":
+            get=i
+            player1=i
+        if i.type=="player2":
+            get=i
+            player2=i
 
     if typ==b"p2":
         if get is None:return

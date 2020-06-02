@@ -20,7 +20,8 @@ I=InMask()
 
 def obj_handler(id,typ,a,b):
     get=None
-
+    player1=None
+    player2=None
     for i in N.objlis:
         if "id" in i.__dict__ and i.id==id:
             i.confirmed=2
@@ -42,7 +43,7 @@ def obj_handler(id,typ,a,b):
             m.confirmed = 2
 
     elif typ==b"p0":
-        if get is None:return
+        if player1 is None:return
 
         player1.location=numpy.array(a).astype(int)
         player1.speed=b[0]
@@ -51,6 +52,7 @@ def obj_handler(id,typ,a,b):
 
     elif typ==b"p2":
         #not using?
+        if player2 is None:return
         player2.id=id
         if player2.location==numpy.array(a).astype(int) and player2.speed==b[0] and player2.rotation==b[1]:
             player2.confirmed=True
@@ -76,7 +78,8 @@ if __name__ == '__main__':
     pygame.display.set_caption("client")
 
 
-    client=Client("127.0.0.1",("127.0.0.1",8081))
+    # client=Client("127.0.0.1",("127.0.0.1",8081))
+    client=Client("192.168.1.199")
     client.handler=obj_handler
 
     player = N.add_controlled_object(Player([30, 50]))
