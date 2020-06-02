@@ -16,26 +16,29 @@ class Player(Ball):
     env=None
     bullet_decay=1000
     max_speed=0.75
+    local=True
     def upd(self, objs, keys):
-        a,d=self.control_keys[0]
-        self.rotation -= (keys[a]-keys[d])*2
+        if self.local:
 
-        self.tosp=0
-        w,s=self.control_keys[1]
-        if keys[w]:
-            if self.speed > -self.max_speed:
-                self.speed -= 0.1
-            self.tosp = True
-        if keys[s]:
-            if self.speed < self.max_speed:
-                self.speed += 0.1
-            self.tosp = True
-        if not self.tosp:
-            if self.speed > 0:
-                self.speed -= 0.1
-            elif self.speed < 0:
-                self.speed += 0.1
-            if -0.1<self.speed<0.1:self.speed=0
+            a, d = self.control_keys[0]
+            self.rotation -= (keys[a] - keys[d]) * 2
+
+            self.tosp = 0
+            w, s = self.control_keys[1]
+            if keys[w]:
+                if self.speed > -self.max_speed:
+                    self.speed -= 0.1
+                self.tosp = True
+            if keys[s]:
+                if self.speed < self.max_speed:
+                    self.speed += 0.1
+                self.tosp = True
+            if not self.tosp:
+                if self.speed > 0:
+                    self.speed -= 0.1
+                elif self.speed < 0:
+                    self.speed += 0.1
+                if -0.1 < self.speed < 0.1: self.speed = 0
 
         location=self.sim_next()
 
@@ -138,7 +141,7 @@ class Player(Ball):
 
 
 if __name__ == '__main__':
-    from pygamenew.two_d_tanks.maps.blitor import *
+    from maps.blitor import *
     #随机生成些线，和小球方向
     N=Shower()
     m=simple_map()

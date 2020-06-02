@@ -58,10 +58,18 @@ def sleep_til():
 #人：位，[速,转]
 def obj_handler(id,typ,a,b):
     for i in N.objlis:
-        if i.id==id:
+        if "id" in i.__dict__ and i.id==id:
             i.confirmed=True
+        if i.type=="player0":player1=i
+        if i.type=="player2":player2=i
 
-    print(id,typ,a,b)
+    if typ==b"p2":
+        print(a,b)
+        player2.location=numpy.array(a).astype(int)
+        player2.speed=b[0]
+        player2.rotation=b[1]
+    else:
+        print(id,typ,a,b)
 
 
 
@@ -69,9 +77,13 @@ if __name__ == '__main__':
     from maps.blitor import *
 
     server=Server(("127.0.0.1",8081),"127.0.0.1")
+    server.handler=obj_handler
+
 
     # 随机生成些线，和小球方向
     N = Shower()
+    pygame.display.set_caption("server")
+
     m = simple_map()
     N.add_static_objects(m)
 
@@ -82,12 +94,12 @@ if __name__ == '__main__':
     player2 = N.add_controlled_object(Player2([300, 50]))
     player2.go_mask = InMask(m)
     player2.env = N
+    player2.local=False
 
     server(N.objlis)
 
     st=sleep_til()
 
-    server.handler=obj_handler
 
 
     last_pause = N.pause
