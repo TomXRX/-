@@ -1,5 +1,5 @@
 import pygame,numpy,time
-from pygamenew.two_d_tanks.shower import *
+from shower import *
 
 
 

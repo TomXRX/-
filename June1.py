@@ -1,4 +1,4 @@
-from pygamenew.two_d_tanks.player.key import *
+from player.key import *
 
 class Player2(Player):
     def __init__(self,*args,**kwargs):
@@ -11,8 +11,8 @@ class Player2(Player):
     def object(self):
         def init():
 
-            try:surf=pygame.image.load(r"..\img\tank21.jpg").convert_alpha()
-            except:surf=pygame.image.load(r"img\tank21.jpg").convert_alpha()
+            try:surf=pygame.image.load(r"..\img\tank21.png").convert_alpha()
+            except:surf=pygame.image.load(r"img\tank21.png").convert_alpha()
             # surf = pygame.Surface((self.size*2,self.size*2))
             # surf.fill(self.color)
             # surf.set_colorkey(self.bgcolor)
@@ -41,8 +41,9 @@ class Server:
             print(socket.gethostbyname_ex(n))
             nq.bind((socket.gethostbyname_ex(n)[-1][-1], 8080))
             print(socket.gethostbyname_ex(n)[-1])
-        else:
+        elif type(host) is str:
             nq.bind((host,8080))
+        else:nq.bind(host)
         nq.connect((target, 8080))
         nq.setblocking(False)
         self.nq=nq
@@ -120,9 +121,9 @@ def sleep_til():
 
 
 if __name__ == '__main__':
-    from pygamenew.two_d_tanks.maps.blitor import *
+    from maps.blitor import *
 
-    server=Server("10.80.62.156")
+    server=Server("127.0.0.1")
 
     # 随机生成些线，和小球方向
     N = Shower()
@@ -136,6 +137,8 @@ if __name__ == '__main__':
     player2 = N.add_controlled_object(Player2([300, 50]))
     player2.go_mask = InMask(m)
     player2.env = N
+
+    server(N.objlis)
 
     st=sleep_til()
 

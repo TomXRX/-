@@ -1,4 +1,4 @@
-from pygamenew.two_d_tanks.dynamic.ball import *
+from dynamic.ball import *
 import math
 class Player(Ball):
     def __init__(self,location,size=10):
@@ -117,8 +117,8 @@ class Player(Ball):
     def object(self):
         def init():
 
-            try:surf=pygame.image.load(r"..\img\tank22.jpg").convert_alpha()
-            except:surf=pygame.image.load(r"img\tank22.jpg").convert_alpha()
+            try:surf=pygame.image.load(r"..\img\tank22.png").convert_alpha()
+            except:surf=pygame.image.load(r"img\tank22.png").convert_alpha()
             # surf = pygame.Surface((self.size*2,self.size*2))
             # surf.fill(self.color)
             # surf.set_colorkey(self.bgcolor)
