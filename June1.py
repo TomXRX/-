@@ -28,8 +28,101 @@ class Player2(Player):
         self.Rplac=rec
         return a
 
+import time,socket,threading
+
+
+class Server:
+    def __init__(self,target,host=None):
+
+        nq = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        n = socket.gethostname()
+        if host==None:
+            print(socket.gethostbyname_ex(n))
+            nq.bind((socket.gethostbyname_ex(n)[-1][-1], 8080))
+            print(socket.gethostbyname_ex(n)[-1])
+        else:
+            nq.bind((host,8080))
+        nq.connect((target, 8080))
+        nq.setblocking(False)
+        self.nq=nq
+
+        import threading
+        threading.Thread(target=self.send_loop).start()
+        threading.Thread(target=self.recv_loop).start()
+
+    new=True
+    sleep=0.005
+
+    sync_flag=True
+    send=[]
+    def send_loop(self):
+        while self.sync_flag:
+
+            if self.new:
+                self.new=False
+                for i in self.send:
+                    self.nq.send(i)
+
+            else:
+                time.sleep(self.sleep)
+    recv=[]
+    def recv_loop(self):
+        while self.sync_flag:
+            if self.new:
+                self.new=False
+                try:
+                    self.nq.recv(1024)
+                except Exception as e:
+                    if e.args[0]==10035:continue
+                    print(e,e.args)
+            else:
+                time.sleep(self.sleep)
+
+
+    def sync_obj(self,obj):
+        self.send.append([obj,time.perf_counter()])
+
+    def __del__(self):
+        self.sync_flag=False
+
+    def need_sync(self,obj):
+        if not "_name" in obj.__dict__:return False
+        #TODO:子弹只需要更新一次
+        return True
+
+
+    def __call__(self, objs):
+
+        for i in objs:
+            if self.need_sync(i):
+                self.sync_obj(i)
+
+
+
+def sleep_til():
+    diff=0.015
+    last_call=0
+    first_call=True
+    def call():
+        nonlocal last_call,first_call
+        interval=last_call-time.perf_counter()
+        # print(interval,)
+        if interval<0:
+            if not first_call:print("too slow, time exceeded {} second for {} second interval".format(-interval,diff))
+            else:first_call=False
+            last_call=time.perf_counter()
+        else:
+            time.sleep(interval)
+        last_call+=diff
+
+    return call
+
+
 if __name__ == '__main__':
     from pygamenew.two_d_tanks.maps.blitor import *
+
+    server=Server("10.80.62.156")
 
     # 随机生成些线，和小球方向
     N = Shower()
@@ -44,6 +137,8 @@ if __name__ == '__main__':
     player2.go_mask = InMask(m)
     player2.env = N
 
+    st=sleep_til()
+
     last_pause = N.pause
     while N.running:
         if not N.pause:
@@ -53,5 +148,5 @@ if __name__ == '__main__':
         N.update()
         N.runner()
 
-
-        time.sleep(0.005)
+        server(N.objlis)
+        st()

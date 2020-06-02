@@ -7,17 +7,17 @@ class Player(Ball):
         # self.control_keys=[[K_a,K_d],[K_w,K_s],K_m]
         self.control_keys=[[K_s,K_f],[K_e,K_d],K_q]
 
-        self.bullet_name_space=[str(self.__hash__())+"bullet_{}".format(i) for i in range(6)]
+        self.bullet_name_space=[str(self.__hash__())+"bullet_{}".format(i) for i in range(5)]
 
     rotation=0
     speed = 0
     last_shoot=0
     env=None
     bullet_decay=1000
-    max_speed=0.5
+    max_speed=0.75
     def upd(self, objs, keys):
         a,d=self.control_keys[0]
-        self.rotation -= (keys[a]-keys[d])
+        self.rotation -= (keys[a]-keys[d])*2
 
         self.tosp=0
         w,s=self.control_keys[1]
@@ -44,7 +44,7 @@ class Player(Ball):
 
         #小动作，移动时
         if self.check_go(self.location):
-            print("cat")
+            print("c",end="")
             gos=[[0,1],[1,0],[-1,0],[0,-1]]
             for i in gos:
                 if not self.check_go(self.location+i):
@@ -68,9 +68,10 @@ class Player(Ball):
                         break
         if self.last_shoot!=keys[self.control_keys[-1]] and not self.last_shoot:
             if bullets:
-                print("shoot")
+                # print("shoot")
+                # print(self.speed,self.size)
                 bullet = self.env.add_dynamic_object(Ball(3,
-                                                          self.sim_next(self.size * 2.1+self.speed*1.1, speed=-1),
+                                                          self.sim_next(self.size * 2.2-self.speed*3, speed=-1),
                                                           [-math.sin(-self.rotation / 180 * math.pi),
                                                            -math.cos(-self.rotation / 180 * math.pi)]))
                 bullet._name = bullets[0]
@@ -87,7 +88,7 @@ class Player(Ball):
         mask = pygame.mask.from_surface(self.object)
         # collision=None
         for m, p, b in zip(masks, placs,bullets):
-            print(".",end="")
+            # print(".",end="")
             plac=numpy.array(self.location)-numpy.array(self.Rplac)
             get=p-plac
             collision = mask.overlap(m, get.astype(int))
