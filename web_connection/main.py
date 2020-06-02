@@ -47,13 +47,15 @@ class Server:
     def send_loop(self):
         while self.sync_flag:
 
-            if self.new:
-                self.new=False
+            if self.new and self.send:
                 try:
                     self.nq.send(self.send)
                     self.send=b""
+                    self.new = False
+
                 except Exception as e:
                     if e.args[0]==10054:print("!",end="")
+                    print("send_error",end=":")
                     print(e,e.args)
 
 
@@ -67,12 +69,14 @@ class Server:
             if self.new:
                 self.new=False
                 try:
-                    self.recv=self.nq.recv(1024)
+                    self.recv=self.nq.recv(8192)
+                    self.upded=False
                 except Exception as e:
                     if e.args[0]==10035:continue
                     if e.args[0]==10054:
                         print("!",end="")
                         continue
+                    print("recv_error",end=":")
                     print(e,e.args)
             else:
                 time.sleep(self.sleep)
@@ -81,11 +85,11 @@ class Server:
 
 
     def spliter(self,buffer):
-        print(buffer)
+        id,buffer=spliter("H",buffer)
         typ,buffer=spliter("cc",buffer)
         locat,buffer=spliter("ff",buffer)
         speed,buffer=spliter("ff",buffer)
-        return [typ,locat,speed],buffer
+        return [id,typ,locat,speed],buffer
 
 
     def decode(self, buffer):
@@ -97,7 +101,15 @@ class Server:
 
 
     def update_objs(self,data):
-        if data:print(data)
+        if data:
+            for i in data:
+                id,typ,a,b=i
+                type=b""
+                for i in typ:type+=i
+                self.handler(id,type,a,b)
+
+    def handler(self,id,typ,a,b):
+        print("should be changed")
 
     def sync_obj(self,obj):
         # self.send.append([obj,time.perf_counter()])
@@ -105,31 +117,49 @@ class Server:
         if typ=="bar":
             a=obj.locat
             b=obj.locat2
+        elif typ[:5]=="player"[:5]:
+            a=obj.locat
+            b=[obj.speed,obj.rotation]
         else:
             a=obj.locat
             b=obj.speed
 
-        typ=typ[0]+typ[-1]
-        # print(typ,a,b)
-        self.send+=struct.pack("ccffff",*[i.encode() for i in typ],*a,*b)
-        print(self.send)
+        typ=typ[:1]+typ[-1:]
+        # typ=typ[:2]+typ[-2:]
 
+        # print(typ,a,b)
+
+        if not "id" in obj.__dict__:
+            obj.id=self.ids
+            self.ids+=2
+        self.send+=struct.pack("Hccffff",obj.id,*[i.encode() for i in typ],*a,*b)
+
+    ids=0
 
     def __del__(self):
         self.sync_flag=False
 
     def need_sync(self,obj):
-        if not "_name" in obj.__dict__:return False
-        #TODO:子弹和墙只需要更新一次
+        # if not "_name" in obj.__dict__:return False
+        if "confirmed" in obj.__dict__:return not obj.confirmed
+        #TODO:玩家需要始终更新
+        #TODO:子弹只需要更新一次
         return True
 
-
+    upded=True
     def __call__(self, objs):
-        self.update_objs(self.decode(self.recv))
+        if not self.upded:
+            self.update_objs(self.decode(self.recv))
+            self.upded=True
 
+        self.send=b""
         for i in objs:
             if self.need_sync(i):
                 self.sync_obj(i)
 
 
         self.new=True
+
+
+class Client(Server):
+    ids=1

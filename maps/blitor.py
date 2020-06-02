@@ -45,10 +45,13 @@ def a_bar():
 class InMask():
     masks=[]
     placs=[]
-    def __init__(self,objs):
+    def __init__(self,objs=()):
         for i in objs:
-            self.masks.append(pygame.mask.from_surface(i.object))
-            self.placs.append(i.locat)
+            self.add_obj(i)
+
+    def add_obj(self,i):
+        self.masks.append(pygame.mask.from_surface(i.object))
+        self.placs.append(i.locat)
 
     def __call__(self, obj,plac,):
         mask=pygame.mask.from_surface(obj)

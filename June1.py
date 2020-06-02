@@ -52,6 +52,18 @@ def sleep_til():
 
     return call
 
+#(cc),(ff),(ff)
+#墙：p1,p2
+#球：位，速
+#人：位，[速,转]
+def obj_handler(id,typ,a,b):
+    for i in N.objlis:
+        if i.id==id:
+            i.confirmed=True
+
+    print(id,typ,a,b)
+
+
 
 if __name__ == '__main__':
     from maps.blitor import *
@@ -74,6 +86,9 @@ if __name__ == '__main__':
     server(N.objlis)
 
     st=sleep_til()
+
+    server.handler=obj_handler
+
 
     last_pause = N.pause
     while N.running:
