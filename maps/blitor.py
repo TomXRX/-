@@ -5,6 +5,7 @@ from shower import *
 
 
 class Bar(Obj):
+    type="bar"
     color = [0, 0, 0]
     bgcolor = [255, 255, 255]
 
@@ -13,6 +14,7 @@ class Bar(Obj):
         (x1,y1),(x2,y2)=p1,p2
         self.lines = [[[x1,y1],[x2,y1]],[[x2,y1],[x2,y2]],[[x2,y2],[x1,y2]],[[x1,y2],[x1,y1]]]
         self.locat = p1
+        self.locat2=p2
         p2 = numpy.array(p2)
         surf = pygame.Surface((p2 - p1))
         surf.fill(self.color)

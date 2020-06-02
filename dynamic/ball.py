@@ -57,6 +57,7 @@ def line_to_vector(line):
     return x2-x1,y2-y1
 
 class Ball(Obj):
+    type="ball"
     def __init__(self,size,location,speed):
         #动画效果
         self.size=size

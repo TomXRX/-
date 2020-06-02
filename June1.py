@@ -1,6 +1,7 @@
 from player.key import *
 
 class Player2(Player):
+    type="player2"
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         # self.control_keys=[[K_a,K_d],[K_w,K_s],K_m]
@@ -28,77 +29,9 @@ class Player2(Player):
         self.Rplac=rec
         return a
 
-import time,socket,threading
+import time
 
-
-class Server:
-    def __init__(self,target,host=None):
-
-        nq = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        n = socket.gethostname()
-        if host==None:
-            print(socket.gethostbyname_ex(n))
-            nq.bind((socket.gethostbyname_ex(n)[-1][-1], 8080))
-            print(socket.gethostbyname_ex(n)[-1])
-        elif type(host) is str:
-            nq.bind((host,8080))
-        else:nq.bind(host)
-        nq.connect((target, 8080))
-        nq.setblocking(False)
-        self.nq=nq
-
-        import threading
-        threading.Thread(target=self.send_loop).start()
-        threading.Thread(target=self.recv_loop).start()
-
-    new=True
-    sleep=0.005
-
-    sync_flag=True
-    send=[]
-    def send_loop(self):
-        while self.sync_flag:
-
-            if self.new:
-                self.new=False
-                for i in self.send:
-                    self.nq.send(i)
-
-            else:
-                time.sleep(self.sleep)
-    recv=[]
-    def recv_loop(self):
-        while self.sync_flag:
-            if self.new:
-                self.new=False
-                try:
-                    self.nq.recv(1024)
-                except Exception as e:
-                    if e.args[0]==10035:continue
-                    print(e,e.args)
-            else:
-                time.sleep(self.sleep)
-
-
-    def sync_obj(self,obj):
-        self.send.append([obj,time.perf_counter()])
-
-    def __del__(self):
-        self.sync_flag=False
-
-    def need_sync(self,obj):
-        if not "_name" in obj.__dict__:return False
-        #TODO:子弹只需要更新一次
-        return True
-
-
-    def __call__(self, objs):
-
-        for i in objs:
-            if self.need_sync(i):
-                self.sync_obj(i)
-
+from web_connection.main import *
 
 
 def sleep_til():
@@ -123,7 +56,7 @@ def sleep_til():
 if __name__ == '__main__':
     from maps.blitor import *
 
-    server=Server("127.0.0.1")
+    server=Server(("127.0.0.1",8081),"127.0.0.1")
 
     # 随机生成些线，和小球方向
     N = Shower()
@@ -153,3 +86,4 @@ if __name__ == '__main__':
 
         server(N.objlis)
         st()
+    server.sync_flag=False

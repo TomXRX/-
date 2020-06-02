@@ -1,6 +1,7 @@
 from dynamic.ball import *
 import math
 class Player(Ball):
+    type="player0"
     def __init__(self,location,size=10):
         self.size = size
         self.location = numpy.array(location).astype("float64")
