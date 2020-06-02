@@ -57,17 +57,29 @@ def sleep_til():
 #球：位，速
 #人：位，[速,转]
 def obj_handler(id,typ,a,b):
+    get=None
     for i in N.objlis:
         if "id" in i.__dict__ and i.id==id:
-            i.confirmed=True
+            i.confirmed = 2
+            get=i
         if i.type=="player0":player1=i
         if i.type=="player2":player2=i
 
     if typ==b"p2":
-        print(a,b)
+        if get is None:return
         player2.location=numpy.array(a).astype(int)
         player2.speed=b[0]
         player2.rotation=b[1]
+
+    elif typ==b"bl":
+        if get is None:
+            b=N.add_dynamic_object(Ball(3,numpy.array(a),numpy.array(b)))
+            b.id=id
+            b.confirmed=2
+            b._name="other"
+            try:
+                b.decay=player2.bullet_decay
+            except:pass
     else:
         print(id,typ,a,b)
 

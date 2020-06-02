@@ -70,17 +70,18 @@ class Player(Ball):
                     if i._name==ii:
                         bullets.remove(ii)
                         break
-        if self.last_shoot!=keys[self.control_keys[-1]] and not self.last_shoot:
-            if bullets:
-                # print("shoot")
-                # print(self.speed,self.size)
-                bullet = self.env.add_dynamic_object(Ball(3,
-                                                          self.sim_next(self.size * 2.2-self.speed*3, speed=-1),
-                                                          [-math.sin(-self.rotation / 180 * math.pi),
-                                                           -math.cos(-self.rotation / 180 * math.pi)]))
-                bullet._name = bullets[0]
-                bullet.decay=self.bullet_decay
-        self.last_shoot=keys[self.control_keys[-1]]
+        if self.local:
+            if self.last_shoot != keys[self.control_keys[-1]] and not self.last_shoot:
+                if bullets:
+                    # print("shoot")
+                    # print(self.speed,self.size)
+                    bullet = self.env.add_dynamic_object(Ball(3,
+                                                              self.sim_next(self.size * 2.2 - self.speed * 3, speed=-1),
+                                                              [-math.sin(-self.rotation / 180 * math.pi),
+                                                               -math.cos(-self.rotation / 180 * math.pi)]))
+                    bullet._name = bullets[0]
+                    bullet.decay = self.bullet_decay
+            self.last_shoot = keys[self.control_keys[-1]]
 
         bullets=bu
         masks=[]

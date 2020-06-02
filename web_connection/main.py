@@ -141,10 +141,12 @@ class Server:
 
     def need_sync(self,obj):
         # if not "_name" in obj.__dict__:return False
-        if "confirmed" in obj.__dict__:return not obj.confirmed
         if "local" in obj.__dict__:return obj.local
-        #TODO:玩家需要始终更新
-        #TODO:子弹只需要更新一次
+        if "confirmed" in obj.__dict__:
+            if obj.confirmed>1:
+                obj.confirmed-=1
+                return True
+            return False
         return True
 
     upded=True
