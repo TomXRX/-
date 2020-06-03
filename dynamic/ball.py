@@ -20,14 +20,14 @@ def collision(line,point,distance,strict=False):
     x,y=point
 
     if ranges(x1,x2,x,distance) and ranges(y1,y2,y,distance):
-        print(line, point, distance)
-        print("!.",end="")
+        # print(line, point, distance)
+        # print("!.",end="")
         if not ranges(y1, y2, y, distance, 1) or not ranges(x1, x2, x, distance, 1):
-            print(".!", end="")
+            # print(".!", end="")
             if numpy.linalg.norm(numpy.array(line[0]) - point) > distance and numpy.linalg.norm(
                 numpy.array(line[1]) - point) > distance: return False
             if strict:return False
-            print("point collision")
+            # print("point collision")
         try:
             C = y1 - x1 / (x2 - x1) * (y2 - y1)
             B = -1
@@ -57,6 +57,7 @@ def line_to_vector(line):
     return x2-x1,y2-y1
 
 class Ball(Obj):
+    type="ball"
     def __init__(self,size,location,speed):
         #动画效果
         self.size=size
@@ -83,7 +84,7 @@ class Ball(Obj):
                         and not collision(i, self.sim_last(), self.size,True):
                             c_objs.append(i)
             if c_objs:
-                print(c_objs,self.location,self.sim_next())
+                # print(c_objs,self.location,self.sim_next())
                 for i in c_objs:self.碰撞(i)
                 return
             for i in obj:
@@ -94,9 +95,9 @@ class Ball(Obj):
                 self.碰撞(c_objs[0])
                 print(c_objs[0],self.location,end="")
                 print("??")
-            elif len(c_objs):
-                print("many_collision")
-                print(len(c_objs))
+            # elif len(c_objs):
+            #     print("many_collision")
+            #     print(len(c_objs))
 
     def 碰撞(self,obj):
         #默认是line

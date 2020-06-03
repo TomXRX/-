@@ -1,10 +1,15 @@
 import pygame,numpy,time
 from shower import *
+<<<<<<< HEAD
 import random
+=======
+
+>>>>>>> a7f8553c2236525c0fd262a2131e5461b2fcda6c
 
 
 
 class Bar(Obj):
+    type="bar"
     color = [0, 0, 0]
     bgcolor = [255, 255, 255]
 
@@ -13,6 +18,7 @@ class Bar(Obj):
         (x1,y1),(x2,y2)=p1,p2
         self.lines = [[[x1,y1],[x2,y1]],[[x2,y1],[x2,y2]],[[x2,y2],[x1,y2]],[[x1,y2],[x1,y1]]]
         self.locat = p1
+        self.locat2=p2
         p2 = numpy.array(p2)
         surf = pygame.Surface((p2 - p1))
         surf.fill(self.color)
@@ -130,10 +136,13 @@ def a_bar():
 class InMask():
     masks=[]
     placs=[]
-    def __init__(self,objs):
+    def __init__(self,objs=()):
         for i in objs:
-            self.masks.append(pygame.mask.from_surface(i.object))
-            self.placs.append(i.locat)
+            self.add_obj(i)
+
+    def add_obj(self,i):
+        self.masks.append(pygame.mask.from_surface(i.object))
+        self.placs.append(i.locat)
 
     def __call__(self, obj,plac,):
         mask=pygame.mask.from_surface(obj)

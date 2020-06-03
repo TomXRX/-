@@ -1,6 +1,7 @@
-from pygamenew.two_d_tanks.player.key import *
+from player.key import *
 
 class Player2(Player):
+    type="player2"
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         # self.control_keys=[[K_a,K_d],[K_w,K_s],K_m]
@@ -11,8 +12,8 @@ class Player2(Player):
     def object(self):
         def init():
 
-            try:surf=pygame.image.load(r"..\img\tank21.jpg").convert_alpha()
-            except:surf=pygame.image.load(r"img\tank21.jpg").convert_alpha()
+            try:surf=pygame.image.load(r"..\img\tank21.png").convert_alpha()
+            except:surf=pygame.image.load(r"img\tank21.png").convert_alpha()
             # surf = pygame.Surface((self.size*2,self.size*2))
             # surf.fill(self.color)
             # surf.set_colorkey(self.bgcolor)
@@ -28,11 +29,77 @@ class Player2(Player):
         self.Rplac=rec
         return a
 
+import time
+
+from web_connection.main import *
+
+
+def sleep_til():
+    diff=0.015
+    last_call=0
+    first_call=True
+    def call():
+        nonlocal last_call,first_call
+        interval=last_call-time.perf_counter()
+        # print(interval,)
+        if interval<0:
+            if not first_call:print("too slow, time exceeded {} second for {} second interval".format(-interval,diff))
+            else:first_call=False
+            last_call=time.perf_counter()
+        else:
+            time.sleep(interval)
+        last_call+=diff
+
+    return call
+
+#(cc),(ff),(ff)
+#墙：p1,p2
+#球：位，速
+#人：位，[速,转]
+def obj_handler(id,typ,a,b):
+    get=None
+    for i in N.objlis:
+        if "id" in i.__dict__ and i.id==id:
+            i.confirmed = 2
+            get=i
+        if i.type=="player0":
+            get=i
+            player1=i
+        if i.type=="player2":
+            get=i
+            player2=i
+
+    if typ==b"p2":
+        if get is None:return
+        player2.location=numpy.array(a).astype(int)
+        player2.speed=b[0]
+        player2.rotation=b[1]
+
+    elif typ==b"bl":
+        if get is None:
+            b=N.add_dynamic_object(Ball(3,numpy.array(a),numpy.array(b)))
+            b.id=id
+            b.confirmed=2
+            b._name="other"
+            try:
+                b.decay=player2.bullet_decay
+            except:pass
+    else:
+        print(id,typ,a,b)
+
+
+
 if __name__ == '__main__':
-    from pygamenew.two_d_tanks.maps.blitor import *
+    from maps.blitor import *
+
+    server=Server(("127.0.0.1",8081),"127.0.0.1")
+    server.handler=obj_handler
+
 
     # 随机生成些线，和小球方向
     N = Shower()
+    pygame.display.set_caption("server")
+
     m = simple_map()
     N.add_static_objects(m)
 
@@ -43,6 +110,13 @@ if __name__ == '__main__':
     player2 = N.add_controlled_object(Player2([300, 50]))
     player2.go_mask = InMask(m)
     player2.env = N
+    player2.local=False
+
+    server(N.objlis)
+
+    st=sleep_til()
+
+
 
     last_pause = N.pause
     while N.running:
@@ -53,5 +127,6 @@ if __name__ == '__main__':
         N.update()
         N.runner()
 
-
-        time.sleep(0.005)
+        server(N.objlis)
+        st()
+    server.sync_flag=False

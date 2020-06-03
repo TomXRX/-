@@ -11,8 +11,8 @@ class Player2(Player):
     def object(self):
         def init():
 
-            try:surf=pygame.image.load(r"..\img\tank21.jpg").convert_alpha()
-            except:surf=pygame.image.load(r"img\tank21.jpg").convert_alpha()
+            try:surf=pygame.image.load(r"..\img\tank21.png").convert_alpha()
+            except:surf=pygame.image.load(r"img\tank21.png").convert_alpha()
             # surf = pygame.Surface((self.size*2,self.size*2))
             # surf.fill(self.color)
             # surf.set_colorkey(self.bgcolor)
