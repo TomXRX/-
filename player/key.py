@@ -1,4 +1,4 @@
-from pygamenew.two_d_tanks.dynamic.ball import *
+from dynamic.ball import *
 import math
 class Player(Ball):
     def __init__(self,location,size=10):

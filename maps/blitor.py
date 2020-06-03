@@ -1,6 +1,6 @@
 import pygame,numpy,time
-from pygamenew.two_d_tanks.shower import *
-
+from shower import *
+import random
 
 
 
@@ -23,6 +23,7 @@ class Bar(Obj):
         pass
 
 def start_bar(lenth,center,vertical,size=10):
+    lenth=lenth+size
     if vertical:return Bar((center[0]-lenth//2,center[1]-size//2),(center[0]+lenth//2,center[1]+size//2))
     return Bar((center[0] - size // 2, center[1] - lenth // 2),(center[0] + size // 2, center[1] + lenth // 2))
 
@@ -36,6 +37,92 @@ def simple_map(distance=100,mount=4):
     lis.append(start_bar(1000, [100, 20], 1))
     lis.append(start_bar(1000, [100, 220], 1))
     return lis
+
+def corToNum(coor,n):
+    return coor[1]*n+coor[0]
+
+def random_map():
+
+    # square
+    complete_size=500
+    # grid number
+    grid_num=10
+
+    # coordinates of the initial two tanks
+    initial_points=[(0,0),(grid_num-1,grid_num-1)]
+
+    initial_coor=(corToNum(initial_points[0],grid_num),corToNum(initial_points[1],grid_num))
+
+    lis=[]
+
+    while True:
+        lis=[]
+        connections=[]
+        raw_conn=[]
+
+        # larger frame
+        lis.append(start_bar(complete_size,[0,complete_size/2],0))
+        lis.append(start_bar(complete_size,[complete_size,complete_size/2],0))
+        lis.append(start_bar(complete_size,[complete_size/2,0],1))
+        lis.append(start_bar(complete_size,[complete_size/2,complete_size],1))
+
+        # grid system
+        l=complete_size/10
+
+        # horizontal grid
+        for i in range(0,grid_num):
+            for j in range(1,grid_num):
+                if(random.choice([True, False])):
+                    lis.append(start_bar(l,[l/2+i*l,j*l],1))
+                else:
+                    connections.append((corToNum((i,j),grid_num),corToNum((i,j-1),grid_num)))
+                    # raw_conn.append(((i,j-1),(i,j)))
+
+        # vertical grid
+        for i in range(1,grid_num):
+            for j in range(0,grid_num):
+                if(random.choice([True, False])):
+                    lis.append(start_bar(l,[i*l,l/2+j*l],0))
+                else:
+                    connections.append((corToNum((i,j),grid_num),corToNum((i-1,j),grid_num)))
+                    # raw_conn.append(((i,j),(i-1,j)))
+        print(connections)
+
+        ifConn=UF(grid_num*grid_num,initial_coor,connections)
+        if(ifConn): break
+    
+    # print(raw_conn)
+    return lis
+
+
+class QuickFindUF:
+
+    def __init__(self,N):
+        self.ids=[]
+        self.N=N
+        for i in range(N):
+            self.ids.append(i)
+
+    def connected(self,p,q):
+        return self.ids[p]==self.ids[q]
+
+    def union(self,p,q):
+        pid=self.ids[p]
+        qid=self.ids[q]
+
+        for i in range(self.N):
+            if(self.ids[i]==pid): self.ids[i]=qid
+
+
+def UF(num,point,connections):
+    uf=QuickFindUF(num)
+
+    for i in connections:
+        uf.union(i[0],i[1])
+
+    return uf.connected(point[0],point[1])
+
+
 
 def a_bar():
     return [start_bar(100,[150,150],0)]

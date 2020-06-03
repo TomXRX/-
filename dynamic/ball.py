@@ -1,6 +1,6 @@
 import numpy
-from pygamenew.two_d_tanks.shower import *
-from pygamenew.two_d_tanks.maps.blitor import *
+from shower import *
+from maps.blitor import *
 import time
 
 def ranges(x1,x2,x,range,partial=0):

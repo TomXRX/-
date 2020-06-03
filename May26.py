@@ -1,4 +1,4 @@
-from pygamenew.two_d_tanks.player.key import *
+from player.key import *
 
 class Player2(Player):
     def __init__(self,*args,**kwargs):
@@ -29,12 +29,16 @@ class Player2(Player):
         return a
 
 if __name__ == '__main__':
-    from pygamenew.two_d_tanks.maps.blitor import *
+    from maps.blitor import *
 
     # 随机生成些线，和小球方向
     N = Shower()
-    m = simple_map()
+    m = random_map()
     N.add_static_objects(m)
+    while N.running:
+        N.runner()
+
+    exit(0)
 
     player = N.add_controlled_object(Player([30, 50]))
     player.go_mask = InMask(m)

@@ -87,6 +87,7 @@ class Shower:
         self.objlis.append(obj)
         return obj
 
+
     def add_controlled_object(self,obj):
         obj.static=False
         obj.controlled=True
