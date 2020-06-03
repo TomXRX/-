@@ -35,16 +35,12 @@ if __name__ == '__main__':
     N = Shower()
     m = random_map()
     N.add_static_objects(m)
-    while N.running:
-        N.runner()
 
-    exit(0)
-
-    player = N.add_controlled_object(Player([30, 50]))
+    player = N.add_controlled_object(Player([25, 25]))
     player.go_mask = InMask(m)
     player.env = N
 
-    player2 = N.add_controlled_object(Player2([300, 50]))
+    player2 = N.add_controlled_object(Player2([475, 475]))
     player2.go_mask = InMask(m)
     player2.env = N
 
