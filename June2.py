@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
 
     # client=Client("127.0.0.1",("127.0.0.1",8081))
-    client=Client("192.168.1.199")
+    client=Client("10.80.62.156")
     client.handler=obj_handler
 
     player = N.add_controlled_object(Player([30, 50]))

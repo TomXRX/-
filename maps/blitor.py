@@ -1,10 +1,7 @@
 import pygame,numpy,time
 from shower import *
-<<<<<<< HEAD
-import random
-=======
 
->>>>>>> a7f8553c2236525c0fd262a2131e5461b2fcda6c
+import random
 
 
 
@@ -28,7 +25,11 @@ class Bar(Obj):
     def upd(self, obj):
         pass
 
-def start_bar(lenth,center,vertical,size=10):
+def start_bar(*args):
+    return _start_bar(*[int(i) if not type(i) is list else [int(j) for j in i] for i in args])
+
+def _start_bar(lenth,center,vertical,size=10):
+
     lenth=lenth+size
     if vertical:return Bar((center[0]-lenth//2,center[1]-size//2),(center[0]+lenth//2,center[1]+size//2))
     return Bar((center[0] - size // 2, center[1] - lenth // 2),(center[0] + size // 2, center[1] + lenth // 2))
