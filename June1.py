@@ -35,7 +35,7 @@ from web_connection.main import *
 
 
 def sleep_til():
-    diff=0.015
+    diff=0.03
     last_call=0
     first_call=True
     def call():
@@ -58,19 +58,19 @@ def sleep_til():
 #人：位，[速,转]
 def obj_handler(id,typ,a,b):
     get=None
+    player1=None
+    player2=None
     for i in N.objlis:
         if "id" in i.__dict__ and i.id==id:
             i.confirmed = 2
             get=i
         if i.type=="player0":
-            get=i
             player1=i
         if i.type=="player2":
-            get=i
             player2=i
 
     if typ==b"p2":
-        if get is None:return
+        if player2 is None:return
         player2.location=numpy.array(a).astype(int)
         player2.speed=b[0]
         player2.rotation=b[1]
@@ -92,7 +92,7 @@ def obj_handler(id,typ,a,b):
 if __name__ == '__main__':
     from maps.blitor import *
 
-    server=Server(("127.0.0.1",8081),"127.0.0.1")
+    server=Server("10.80.62.172","10.80.62.156")
     server.handler=obj_handler
 
 
@@ -100,14 +100,15 @@ if __name__ == '__main__':
     N = Shower()
     pygame.display.set_caption("server")
 
-    m = simple_map()
+    # m = simple_map()
+    m = random_map()
     N.add_static_objects(m)
 
-    player = N.add_controlled_object(Player([30, 50]))
+    player = N.add_controlled_object(Player([25,25]))
     player.go_mask = InMask(m)
     player.env = N
 
-    player2 = N.add_controlled_object(Player2([300, 50]))
+    player2 = N.add_controlled_object(Player2([475, 475]))
     player2.go_mask = InMask(m)
     player2.env = N
     player2.local=False
