@@ -34,23 +34,6 @@ import time
 from web_connection.main import *
 
 
-def sleep_til():
-    diff=0.03
-    last_call=0
-    first_call=True
-    def call():
-        nonlocal last_call,first_call
-        interval=last_call-time.perf_counter()
-        # print(interval,)
-        if interval<0:
-            if not first_call:print("too slow, time exceeded {} second for {} second interval".format(-interval,diff))
-            else:first_call=False
-            last_call=time.perf_counter()
-        else:
-            time.sleep(interval)
-        last_call+=diff
-
-    return call
 
 #(cc),(ff),(ff)
 #墙：p1,p2
@@ -79,7 +62,7 @@ def obj_handler(id,typ,a,b):
         if get is None:
             b=N.add_dynamic_object(Ball(3,numpy.array(a),numpy.array(b)))
             b.id=id
-            b.confirmed=2
+            b.confirmed=100
             b._name="other"
             try:
                 b.decay=player2.bullet_decay
@@ -92,7 +75,7 @@ def obj_handler(id,typ,a,b):
 if __name__ == '__main__':
     from maps.blitor import *
 
-    server=Server("10.80.62.172","10.80.62.156")
+    server=Server("192.168.40.19")
     server.handler=obj_handler
 
 

@@ -1,6 +1,21 @@
 import pygame
 from pygame.locals import *
 
+import time
+from functools import wraps
+
+def timethis(func):
+    '''
+    Decorator that reports the execution time.
+    '''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(func.__name__, end-start)
+        return result
+    return wrapper
 
 class Obj():
     show = True
@@ -123,6 +138,7 @@ class Shower:
         except:
             return None
 
+    # @timethis
     def update(self,):
         if self.pause:return
         self.pressed = pygame.key.get_pressed()
@@ -137,17 +153,24 @@ class Shower:
 
     clear_print = True
 
-    def bliter(self):
-        for k in self.objlis:
-            if k.show:
+    on_static=False
+    static_surface=None
 
-                try:
-                    self.screen.blit(k.object, k-k.Rplac)
-                except Exception as e:
-                    print(k.name, k.locat, k.Rplac)
-                    raise e
-                if k.name:
-                    self.screen.blit(self.font.render(str(k.name), True, (0, 0, 255)), k.locat)
+    # @timethis
+    def bliter(self):
+        if [(i.object,i-i.Rplac) for i in self.objlis if i.show and i.static ]:
+            if not self.on_static:
+                self.screen.fill(self.backgroundColor)
+                self.screen.blits([(i.object, i - i.Rplac) for i in self.objlis if i.show and i.static])
+                pygame.display.update()
+                pygame.image.save(self.screen, "map.png")
+                self.static_surface=pygame.image.load("map.png")
+                self.on_static=True
+            else:self.screen.blit(self.static_surface,(0,0))
+        else:self.screen.fill(self.backgroundColor)
+
+
+        self.screen.blits([(i.object,i-i.Rplac) for i in self.objlis if i.show and not i.static])
         i = 0
         for n in self.printe:
             self.screen.blit(n, (10, 20 + i * 30))
@@ -164,7 +187,7 @@ class Shower:
     pause=False
     def runner(self, blit=True):
         # self.pressed=pygame.key.get_pressed()
-        self.screen.fill(self.backgroundColor)
+
         self.events = pygame.event.get()
         for event in self.events:
             if event.type == KEYDOWN:
@@ -178,4 +201,22 @@ class Shower:
             if blit: self.bliter()
         else:
             pygame.display.quit()
+
+def sleep_til(diff=0.03):
+    import time
+    last_call=0
+    first_call=True
+    def call():
+        nonlocal last_call,first_call
+        interval=last_call-time.perf_counter()
+        # print(interval,)
+        if interval<0:
+            if not first_call:print("too slow, time exceeded {} second for {} second interval".format(-interval,diff))
+            else:first_call=False
+            last_call=time.perf_counter()
+        else:
+            time.sleep(interval)
+        last_call+=diff
+
+    return call
 

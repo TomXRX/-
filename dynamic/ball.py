@@ -158,117 +158,36 @@ class Ball(Obj):
         self.Rplac=(self.size,self.size)
         return self.surf
 
-class MaskBall(Obj):
-    def __init__(self,size,location,speed):
-        #动画效果
-        self.size=size
-        self.location=numpy.array(location).astype("float64")
-        #vector
-        self.speed=numpy.array(speed)
-
-    def __add__(self, other):
-        print("使用了+")
-        return self.碰撞箱(other)
-
+class MaskBall(Ball):
     def 碰撞箱(self,obj):
-        if type(obj)==dict:
-            if "lines" in obj:
-                lines=obj["lines"]
-                self.碰撞箱(lines)
-        else:
-            #默认是lines
+        # x=time.perf_counter()
+        # print(x)
+        mask = pygame.mask.from_surface(self.object)
+        obj_mask=pygame.mask.from_surface(obj.object)
+        obj_plac=obj.locat
 
-            c_objs=[]
+        plac = numpy.array(self.location) - numpy.array(self.Rplac)
+        get = obj_plac - plac
+        collision = mask.overlap(obj_mask, get.astype(int))
+        #?? collision=numpy.linalg.norm(get)<=self.size
+        # print(x-time.perf_counter())
+        return collision
 
-
-            if len(c_objs)==1:
-                self.碰撞(c_objs[0])
-                print(c_objs[0],self.location,end="")
-                print("??")
-            elif len(c_objs):
-                print("many_collision")
-                print(len(c_objs))
-
-    def 碰撞(self,obj):
-        #默认是line
-        """正交分解一个平行的向量，一个垂直的向量，垂直的向量取反，平行的不变"""
-        p=line_to_vector(obj)
-        # print(p)
-        pline=numpy.dot(self.speed,p)/numpy.linalg.norm(p)
-        # print(pline,p,p/numpy.linalg.norm(p))
-        pline=p/numpy.linalg.norm(p)*pline
-        # print(pline)
-        cline=-pline+self.speed
-        # print("cline:",end=" ")
-        # print(cline)
-        self.speed = pline-cline
-
-    decay=10000
-
-    color=[0,255,0]
-    bgcolor=[255,255,255]
-
-    @property
-    def alive(self):
-        return self.decay>0
-
+    # @timethis
     def upd(self,objs,keys=None):
+        
         self.decay-=1
         # print("upding")
         for i in objs:
             if "lines" in i.__dict__:
-                self.碰撞箱(i.lines)
+                if self.碰撞箱(i):
+                    super().碰撞箱(i.lines)
+                    
         self.location+=self.speed
 
-    def sim_next(self, literation=1):
-        return self.location + self.speed * literation
-
-    def sim_last(self,literation=1):
-        return self.location-self.speed*literation
-
-    @property
-    def locat(self):return self.location
-
-
-    changed=0
-    @property
-    def object(self):
-        def init():
-            surf = pygame.Surface((self.size*2,self.size*2))
-            surf.fill(self.color)
-            surf.set_colorkey(self.bgcolor)
-            return surf
-
-        if not self.inited:
-            self.surf = init()
-            self.inited = 1
-
-        self.Rplac=(self.size,self.size)
-        return self.surf
-
-
-def get_collusion(things):
-        masks=[]
-        placs=[]
-        #接收子弹
-        for i in bullets:
-            masks.append(pygame.mask.from_surface(i.object))
-            placs.append(i.locat)
-        mask = pygame.mask.from_surface(self.object)
-        # collision=None
-        for m, p, b in zip(masks, placs,bullets):
-            print(".",end="")
-            plac=numpy.array(self.location).astype(int)-numpy.array(self.Rplac).astype(int)
-            p=p.astype(int)
-            collision = mask.overlap(m, -plac + p)
-
-            if collision:
-                b.decay=0
-                self.alive=False
-                # return collision
-
+Ball=MaskBall
 if __name__ == '__main__':
-    from pygamenew.two_d_tanks.maps.blitor import *
+    from maps.blitor import *
     #随机生成些线，和小球方向
     N=Shower()
     ball=N.add_dynamic_object(Ball(5,[159.5 , 108.65], [0.5 , 0.85]))

@@ -61,18 +61,21 @@ class Player(Ball):
 
 
         bullets=self.bullet_name_space.copy()
+
         #发射子弹
         bu=[]
+        last_decay=0
         for i in objs:
             if "_name" in i.__dict__:
                 bu.append(i)
                 for ii in bullets:
                     if i._name==ii:
                         bullets.remove(ii)
+                        last_decay=max(i.decay,last_decay)
                         break
         if self.local:
             if self.last_shoot != keys[self.control_keys[-1]] and not self.last_shoot:
-                if bullets:
+                if bullets and last_decay<self.bullet_decay-30:
                     # print("shoot")
                     # print(self.speed,self.size)
                     bullet = self.env.add_dynamic_object(Ball(3,

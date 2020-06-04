@@ -44,6 +44,8 @@ if __name__ == '__main__':
     player2.go_mask = InMask(m)
     player2.env = N
 
+    st=sleep_til()
+
     last_pause = N.pause
     while N.running:
         if not N.pause:
@@ -52,5 +54,4 @@ if __name__ == '__main__':
         last_pause = N.pause
         N.update()
         N.runner()
-
-        time.sleep(0.005)
+        st()
